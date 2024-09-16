@@ -60,7 +60,7 @@ plugins:
 author:
   name   : "Jeff Cheng"
   avatar : "/assets/images/bio-photo.jpg"
-  bio    : "My awesome biography constrained to a sentence or two goes here."
+  bio    : "Master's Student at Johns Hopkins CLSP"
   links:
     - label: "Website"
       icon: "fas fa-fw fa-link"
@@ -72,8 +72,8 @@ author:
       icon: "fab fa-fw fa-github"
       url: "https://github.com/nexync"
     - label: "Google Scholar"
-      icon: "fab fa-fw fa-scholar"
-      url: "https://instagram.com/"
+      icon: "fab fa-google"
+      url: "https://scholar.google.com/citations?user=MWN7IR4AAAAJ&hl=en&oi=sra"
 
 footer:
   links:
