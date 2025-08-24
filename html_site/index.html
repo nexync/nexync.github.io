@@ -21,7 +21,7 @@
 </head>
 <body>
 
-<div class="header layout">
+<div class="header">
   <div>
     <a href="#">
       <div>
@@ -29,31 +29,28 @@
       </div>
     </a>
   </div>
-  <div style="display: flex; justify-content: space-between; font-size: 16pt; align-items: center;">
-    <a href="#">
-      <div>
-        About Me
-      </div>
-    </a>
+  <div class="nav-bar">
+    <a href="#">About Me</a>
     <div class="vertical-line"></div>
-    <a href="./publications/index.html">
-      <div>
-        Publications
-      </div>
-    </a>
+    <a href="./publications/index.html">Publications</a>
     <div class="vertical-line"></div>
-    <a>
-      <div>
-        CV
-      </div>
-    </a>
+    <a href="#">CV</a>
   </div>
+
+  <details class="nav-dropdown">
+    <summary></summary>
+    <nav class="dropdown">
+      <a href="#">About Me</a>
+      <a href="./publications/index.html">Publications</a>
+      <a href="#">CV</a>
+    </nav>
+  </details>
 </div>
 
 <hr>
 
 <div class="layout">
-  <div>
+  <div class="panel-small">
     <div class="container container-small" style="border-radius: 4px 4px 0px 0px;">
       <div class="container-header">
         photo.jpg
@@ -113,10 +110,12 @@
     </div>
   </div>
 
-  <div>
+  <div class="panel-normal">
     <div class="section">
       About Me
     </div>
+
+    <hr style="opacity: 50%">
 
     <div class="container container-large">
       <div class="container-header">
@@ -207,10 +206,12 @@
     </div>
   </div>
 
-  <div>
+  <div class="panel-small">
     <div class="section">
       News
     </div>
+
+    <hr style="opacity: 50%">
 
     <div class="container container-small">
       <div class="container-header">
