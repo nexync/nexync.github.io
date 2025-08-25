@@ -17,10 +17,10 @@
   <link href="https://db.onlinewebfonts.com/c/0253e1401c58c5911902cdca02857f0e?family=White+Rabbit+Regular" rel="stylesheet">
 
 
-  
 </head>
 <body>
 
+<div id="arena">
 <div class="header">
   <div>
     <a href="#">
@@ -71,7 +71,7 @@
         </div>
       </div>
       <div class="container-content">
-        <div class="mobile-links">
+        <div class="mobile">
           PhD @ PLI
           <details class="nav-dropdown">
             <summary>Follow</summary>
@@ -103,7 +103,6 @@
             </nav>
           </details>
           <div class="overlay"></div>
-
         </div>
         <div class="no-mobile">
           <div style="margin: 0px auto; font-size: 1.5em;">
@@ -292,6 +291,44 @@
   </div>
 
 </div>
+
+<div id="square">hi</div>
+
+<canvas id="canvas"></canvas>
+</div>
+
+<script>
+  const arena = document.getElementById("arena");
+  const square = document.getElementById("square");
+
+  let x = 20;   // starting x (px, inside the arena)
+  let y = 20;   // starting y
+  let vx = 2.4; // horizontal speed (px/frame)
+  let vy = 1.8; // vertical speed
+
+  function animate() {
+    // size of container minus size of square (clientWidth excludes borders)
+    const maxX = arena.clientWidth  - square.offsetWidth;
+    const maxY = arena.clientHeight - square.offsetHeight;
+
+    x += vx;
+    y += vy;
+
+    // bounce with clamping to avoid getting stuck outside
+    if (x <= 0) { x = 0; vx = Math.abs(vx); }
+    else if (x >= maxX) { x = maxX; vx = -Math.abs(vx); }
+
+    if (y <= 0) { y = 0; vy = Math.abs(vy); }
+    else if (y >= maxY) { y = maxY; vy = -Math.abs(vy); }
+
+    square.style.left = x + "px";
+    square.style.top  = y + "px";
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+</script>
 
 </body>
 </html>

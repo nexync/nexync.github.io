@@ -42,7 +42,7 @@ a:hover {
     font-size: 1.5em; 
     font-family: 'White Rabbit Regular', sans-serif;
     width: min(1200px, 95%); 
-    margin: 0 auto; 
+    margin: 1em auto; 
     display: flex; 
     justify-content: space-between;
 }
@@ -304,6 +304,22 @@ a:hover {
     display: none;
 }
 
+#square {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: red;
+    top: 0;
+    left: 0;
+}
+
+#arena {
+    position: relative;
+    margin: 24px auto;
+    border: 2px solid #333;
+    background: #111;
+    overflow: hidden; /* keep square clipped inside */
+}
 
 
 @keyframes flashBorder {
@@ -339,7 +355,7 @@ a:hover {
     .no-mobile {
         display: none;
     }
-    .mobile-links {
+    .mobile {
         display: flex;
         text-align: center;
         flex-direction: column;
