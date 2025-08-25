@@ -14,11 +14,27 @@ a:hover {
     color:#00FF41;
 }
 
+.overlay {
+    position: fixed;
+    inset: 0;
+    backdrop-filter: blur(4px);
+    background: rgba(0,0,0,0.2);
+    display: none;
+    z-index: 5;
+}
+
+.dropdown[open] .dropdown-content {
+  display: block;
+}
+
+
+
 .layout {
     width: min(1200px, 95%); 
     margin: 0 auto; 
     display: flex; 
     justify-content: space-between;
+    column-gap: 1em;
 }
 
 .header {
@@ -72,7 +88,7 @@ a:hover {
     display: none;
 }
 
-.dropdown {
+.header .dropdown {
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -80,17 +96,69 @@ a:hover {
     right: 0%;
     background: #1c1c1d;
     min-width: 150px;
+    z-index: 15;
+    padding: 10px 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: 1px solid aliceblue;
+}
+
+.header .dropdown a {
+    text-decoration: none;
+    text-align: right;
+    margin: 0.2em 0;
+}
+
+
+.header .nav-dropdown summary {
+    z-index: 15;
+}
+
+.header details[open] ~ .overlay {
+    display: block;
+}
+
+.container .nav-dropdown summary {
+    color: lightsteelblue;
+    margin: 0 auto;
+    padding: 5px;
+    border: 1px solid lightsteelblue;
+    border-radius: 4px;
+    list-style: none;
+    z-index: 10;
+}
+
+
+.container .dropdown {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%); /* shift back by half width */
+    background: #1c1c1d;
+    width: 100px;
     z-index: 10;
     padding: 10px 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     border: 1px solid aliceblue;
-    padding: none;
+    margin-top: 0.5em;
 }
 
-.dropdown a {
+.container .dropdown a {
     text-decoration: none;
-    text-align: right;
+    text-align: center;
+    margin: 0.3em auto;
 }
+
+.container details[open] summary {
+    color: #00FF41;
+    border-color: #00FF41;
+}
+
+.container details[open] ~ .overlay {
+    display: block;
+}
+
 
 .container {
     border: 1px solid lightgrey;
@@ -232,26 +300,50 @@ a:hover {
     animation: flashBorder 2s ease;
 }
 
+.mobile {
+    display: none;
+}
+
+
+
 @keyframes flashBorder {
   0%   { border-color: aliceblue; }
   50%  { border-color: #00FF41; }
   100% { border-color: aliceblue; }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 600px) {
     .nav-bar {
         display: none;
     }
     .nav-dropdown {
         position: relative;
-        display: inline-block;
+        display: flex;
+        background-image: none;
     }
+
     .layout {
         flex-direction: column;
-        align-items: center;
     }
-    .panel-small {
-        width: 100%; 
+    .panel-small, .panel-normal, .panel-large {
         display: flex;
+        width: 100%;
+    }
+    .v {
+        flex-direction: column;
+    }
+    .panel-small:not(.v) .container {
+        width: 40%;
+    }
+
+    .no-mobile {
+        display: none;
+    }
+    .mobile-links {
+        display: flex;
+        text-align: center;
+        flex-direction: column;
+        justify-content: space-around;
+        aspect-ratio: 1/1; 
     }
 }

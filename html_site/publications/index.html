@@ -30,25 +30,30 @@
     </a>
   </div>
   <div class="nav-bar">
-    <a href="../index.html">
-      About Me
-    </a>
+    <a href="#"><div>About Me</div></a>
     <div class="vertical-line"></div>
-    <a href="#">
-      Publications
-    </a>
+    <a href="./publications/index.html"><div>Publications</div></a>
     <div class="vertical-line"></div>
-    <a>
-      CV
-    </a>
+    <a href="#"><div>CV</div></a>
   </div>
+
+  <details class="nav-dropdown">
+    <summary></summary>
+    <nav class="dropdown">
+      <a href="#">About Me</a>
+      <a href="./publications/index.html">Publications</a>
+      <a href="#">CV</a>
+    </nav>
+  </details>
+  <div class="overlay" style="z-index: 11"></div>
+
 </div>
 
 <hr>
 
 <div class="layout">
   <div class="panel-small">
-    <div class="container container-small" style="border-radius: 4px 4px 0px 0px;">
+    <div class="container " style="border-radius: 4px 4px 0px 0px;">
       <div class="container-header">
         photo.jpg
       </div>
@@ -57,7 +62,7 @@
       </div>
     </div>
 
-    <div class="container container-small">
+    <div class="container">
       <div class="container-header">
         contact.txt
         <div class="circle-container">
@@ -66,47 +71,84 @@
         </div>
       </div>
       <div class="container-content">
-        <h2 style="margin: 0px auto">
-          Jeffrey Cheng
-        </h2>
-        <h4 style="margin: 20px auto 0px auto;">
-          PhD @ Princeton PLI
-        </h4>
-        <hr>
-        <div class="link">
-          <a href="https://github.com/nexync" target="_blank">
-            <i class="fa-brands fa-github fa-2x"></i>
-          </a>
-          <a href="https://x.com/jeff_cheng_77" target="_blank">
-            <i class="fa-brands fa-x-twitter fa-2x"></i>
-          </a>
-          <a href="https://scholar.google.com/citations?hl=en&user=MWN7IR4AAAAJ" target="_blank">
-            <i class="fa-brands fa-google-scholar fa-2x"></i>
-          </a>
-        </div>
-        <hr>
-        <div class="link">
-          <a href="https://www.linkedin.com/in/jeffrey-cheng-nx7/" target="_blank">
-            <i class="fa-brands fa-linkedin fa-2x"></i>
-          </a>
-          <a href="https://www.semanticscholar.org/author/Jeffrey-Cheng/2292210330" target="_blank">
-            <i class="ai ai-semantic-scholar ai-2x"></i>
-          </a>          
-          <a href="https://orcid.org/my-orcid?orcid=0009-0003-2918-0324" target="_blank">
-            <i class="ai ai-orcid ai-2x"></i>
-          </a>
-        </div>
-        <hr>
-        <p style="text-align: center; margin: 0 auto;">
-          Contact me via X or email:
-          <br>
-          jc93 at princeton dot edu
-        </p>
+        <div class="mobile-links">
+          PhD @ PLI
+          <details class="nav-dropdown">
+            <summary>Follow</summary>
+            <nav class="dropdown">
+              <a href="https://github.com/nexync">
+                <i class="fa-brands fa-github"></i>
+                Github
+              </a>
+              <a href="https://github.com/nexync">
+              <i class="fa-brands fa-x-twitter"></i>
+                Twitter
+              </a>
+              <a href="https://github.com/nexync">
+                <i class="fa-brands fa-google-scholar"></i>
+                G. Scholar
+              </a>
+              <a href="https://github.com/nexync">
+                <i class="fa-brands fa-linkedin"></i>
+                LinkedIn
+              </a>
+              <a href="https://github.com/nexync">
+                <i class="ai ai-semantic-scholar"></i>
+                S. Scholar
+              </a>
+              <a href="https://github.com/nexync">
+                <i class="ai ai-orcid"></i>
+                OrcID
+              </a>
+            </nav>
+          </details>
+          <div class="overlay"></div>
 
+        </div>
+        <div class="no-mobile">
+          <div style="margin: 0px auto; font-size: 1.5em;">
+            Jeffrey Cheng
+          </div>
+          <div style="margin: 20px auto 0px auto; font-size: 1.2em">
+            PhD @ Princeton PLI
+          </div>
+          <hr>
+          <div class="link">
+            <a href="https://github.com/nexync" target="_blank">
+              <i class="fa-brands fa-github fa-2x"></i>
+            </a>
+            <a href="https://x.com/jeff_cheng_77" target="_blank">
+              <i class="fa-brands fa-x-twitter fa-2x"></i>
+            </a>
+            <a href="https://scholar.google.com/citations?hl=en&user=MWN7IR4AAAAJ" target="_blank">
+              <i class="fa-brands fa-google-scholar fa-2x"></i>
+            </a>
+          </div>
+          <hr>
+          <div class="link">
+            <a href="https://www.linkedin.com/in/jeffrey-cheng-nx7/" target="_blank">
+              <i class="fa-brands fa-linkedin fa-2x"></i>
+            </a>
+            <a href="https://www.semanticscholar.org/author/Jeffrey-Cheng/2292210330" target="_blank">
+              <i class="ai ai-semantic-scholar ai-2x"></i>
+            </a>          
+            <a href="https://orcid.org/my-orcid?orcid=0009-0003-2918-0324" target="_blank">
+              <i class="ai ai-orcid ai-2x"></i>
+            </a>
+          </div>
+          <hr>
+          <p style="text-align: center; margin: 0 auto;">
+            Contact me via X or email:
+            <br>
+            jc93 at princeton dot edu
+          </p>
+        </div>
       </div>
     </div>
   </div>
-  <div class="panel-large">
+
+
+  <div class="panel-large v">
     <div class="section">Publications</div>
     <hr style="opacity: 0.5;">
     <div class="year">
