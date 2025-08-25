@@ -166,6 +166,8 @@ a:hover {
     background-color: #101010;
     margin: 1em auto;
     font-size: 1.1em;
+    z-index: 1;
+    position: relative
 }
 
 .panel-small {
@@ -306,11 +308,18 @@ a:hover {
 
 #square {
     position: absolute;
-    width: 50px;
-    height: 50px;
-    background: red;
+    width: 15px;
+    height: 15px;
+    background: #00FF41;
     top: 0;
     left: 0;
+    border-radius: 50%;
+    filter: blur(2px);
+    box-shadow: 
+      0 0 10px #00FF41,
+      0 0 20px #00FF41,
+      0 0 40px #00FF41;  
+    z-index: 0;        /* glowing aura */
 }
 
 #arena {
