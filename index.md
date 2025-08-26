@@ -3,6 +3,9 @@ layout: default
 title: About Me
 ---
 
-# Welcome
+<div class="layout">
+{% include contact.html %}
 
-Homepage here
+Testing
+
+</div>
