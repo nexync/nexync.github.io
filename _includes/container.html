@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" {% if include.image_url %} style="border-radius: 4px 4px 0px 0px;" {% endif %}>
   <div class="container-header">
     {{ include.label }}
     <div class="circle-container">
@@ -6,7 +6,7 @@
       <div class="circle" style="background-color: lime"></div>
     </div>
   </div>
-  <div class="container-content">
+  <div class="container-content" {% if include.image_url %} style="padding: 0; margin: 0;" {% endif %}>
     {% if include.image_url %}
         <img src="{{ include.image_url }}" style="display: block; width:100%; height:auto;"/>
     {% endif %}
