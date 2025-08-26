@@ -1,8 +1,0 @@
-@media (max-width: 1200px) {
-  .nav-bar {
-    display: none;
-  }
-  .nav-dropdown {
-    display: block;
-  }
-}
