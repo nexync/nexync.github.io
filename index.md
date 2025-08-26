@@ -15,18 +15,7 @@ title: About Me
   {% include container.html 
     label="about.txt"
     content=
-      "
-      <p>
-        I am a first year PhD student at Princeton Language and Intelligence (PLI) advised by <a href="https://www.cs.princeton.edu/~danqic/">Danqi Chen</a>. 
-        My research interests broadly lie in the intersection of natural language processing and machine learning. 
-        I am currently interested in language models and agents; in particular, I aim to study the downstream effects of 
-        pretraining data and methods to improve the capabilities and efficiency of reasoning models. 
-      </p>
-      <br>
-      <p>
-        Below are a few questions I am interested in:
-      </p>
-      "
+      "I am a first year PhD student at Princeton Language and Intelligence (PLI) advised by <a href="https://www.cs.princeton.edu/~danqic/">Danqi Chen</a>. My research interests broadly lie in the intersection of natural language processing and machine learning. I am currently interested in language models and agents; in particular, I aim to study the downstream effects of pretraining data and methods to improve the capabilities and efficiency of reasoning models. Below are a few questions I am interested in:"
   %}
 
   <div class="container ">
