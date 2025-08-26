@@ -300,7 +300,7 @@ a:hover {
 }
 
 :target {
-    animation: flashBorder 2s ease;
+    animation: flashBorder 5s ease;
 }
 
 .mobile {
@@ -333,7 +333,9 @@ a:hover {
 
 @keyframes flashBorder {
   0%   { border-color: aliceblue; }
-  50%  { border-color: #00FF41; }
+  25%  { border-color: #00FF41; }
+  50% { border-color: aliceblue; }
+  75%  { border-color: #00FF41; }
   100% { border-color: aliceblue; }
 }
 
