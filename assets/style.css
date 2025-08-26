@@ -1,0 +1,28 @@
+body {
+	font-size: 17px; 
+}
+
+p.header {
+	margin-bottom: 0px;
+}
+
+ul {
+	margin-top: 0px;
+}
+
+div.sidebar.sticky {
+	font-size: 24px;
+}
+
+.table {
+	border-collapse: collapse;
+	border: none;
+}
+
+.tr {
+	border: none;
+}
+
+.td {
+	border: none;
+}
