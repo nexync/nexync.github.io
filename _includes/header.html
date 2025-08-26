@@ -1,0 +1,24 @@
+<div class="header">
+  <div>
+    <a href="#"><div>Jeff Cheng</div>
+    </a>
+  </div>
+  <div class="nav-bar">
+    {% for item in site.nav %}
+      <a href="{{ item.link | relative_url }}"><div>{{ item.name }}</div></a>
+      {% unless forloop.last %}
+        <div class="vertical-line"></div>
+      {% endunless %}
+    {% endfor %}
+  </div>
+
+  <details class="nav-dropdown">
+    <summary></summary>
+    <nav class="dropdown">
+      {% for item in site.nav %}
+        <a href="{{ item.link | relative_url }}">item.name }}</a>
+      {% endfor %}
+    </nav>
+  </details>
+  <div class="overlay" style="z-index: 11"></div>
+</div>
