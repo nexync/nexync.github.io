@@ -21,6 +21,7 @@
 </head>
 <body>
 
+<div id="arena">
 
 <div class="header">
   <div>
@@ -35,15 +36,15 @@
     <div class="vertical-line"></div>
     <a href="#"><div>Publications</div></a>
     <div class="vertical-line"></div>
-    <a href="#"><div>CV</div></a>
+    <a href="../assets/cv_jeffrey_cheng.pdf"><div>CV</div></a>
   </div>
 
   <details class="nav-dropdown">
     <summary></summary>
     <nav class="dropdown">
-      <a href="#">About Me</a>
-      <a href="./publications/index.html">Publications</a>
-      <a href="#">CV</a>
+      <a href="../index.html">About Me</a>
+      <a href="./index.html">Publications</a>
+      <a href="../assets/cv_jeffrey_cheng.pdf">CV</a>
     </nav>
   </details>
   <div class="overlay" style="z-index: 11"></div>
@@ -310,5 +311,45 @@
     </div>
   </div>
 </div>
+
+
+<div id="square"></div>
+
+</div>
+
+<script>
+  const arena = document.getElementById("arena");
+  const square = document.getElementById("square");
+
+  let x = 20;   // starting x (px, inside the arena)
+  let y = 20;   // starting y
+  let vx = 1; // horizontal speed (px/frame)
+  let vy = 1; // vertical speed
+
+  function animate() {
+    // size of container minus size of square (clientWidth excludes borders)
+    const maxX = arena.clientWidth  - square.offsetWidth;
+    const maxY = arena.clientHeight - square.offsetHeight;
+
+    x += vx;
+    y += vy;
+
+    // bounce with clamping to avoid getting stuck outside
+    if (x <= 0) { x = 0; vx = Math.abs(vx); }
+    else if (x >= maxX) { x = maxX; vx = -Math.abs(vx); }
+
+    if (y <= 0) { y = 0; vy = Math.abs(vy); }
+    else if (y >= maxY) { y = maxY; vy = -Math.abs(vy); }
+
+    square.style.left = x + "px";
+    square.style.top  = y + "px";
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+</script>
+
+
 </body>
 </html>

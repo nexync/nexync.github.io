@@ -34,15 +34,15 @@
     <div class="vertical-line"></div>
     <a href="./publications/index.html"><div>Publications</div></a>
     <div class="vertical-line"></div>
-    <a href="#"><div>CV</div></a>
+    <a href="./assets/cv_jeffrey_cheng.pdf"><div>CV</div></a>
   </div>
 
   <details class="nav-dropdown">
     <summary></summary>
     <nav class="dropdown">
-      <a href="#">About Me</a>
+      <a href="./index.html">About Me</a>
       <a href="./publications/index.html">Publications</a>
-      <a href="#">CV</a>
+      <a href="./assets/cv_jeffrey_cheng.pdf">CV</a>
     </nav>
   </details>
   <div class="overlay" style="z-index: 11"></div>
@@ -62,7 +62,7 @@
       </div>
     </div>
 
-    <div class="container">
+    <div class="container" style="z-index: 10;">
       <div class="container-header">
         contact.txt
         <div class="circle-container">
@@ -294,7 +294,6 @@
 
 <div id="square"></div>
 
-<canvas id="canvas"></canvas>
 </div>
 
 <script>
@@ -303,8 +302,8 @@
 
   let x = 20;   // starting x (px, inside the arena)
   let y = 20;   // starting y
-  let vx = 0.75; // horizontal speed (px/frame)
-  let vy = 0.75; // vertical speed
+  let vx = 1; // horizontal speed (px/frame)
+  let vy = 1; // vertical speed
 
   function animate() {
     // size of container minus size of square (clientWidth excludes borders)

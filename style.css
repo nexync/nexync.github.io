@@ -88,6 +88,10 @@ a:hover {
     display: none;
 }
 
+.header details {
+    z-index: 15;
+}
+
 .header .dropdown {
     display: flex;
     flex-direction: column;
@@ -108,13 +112,12 @@ a:hover {
     margin: 0.2em 0;
 }
 
-
-.header .nav-dropdown summary {
-    z-index: 15;
-}
-
 .header details[open] ~ .overlay {
     display: block;
+}
+
+.container details {
+    z-index: 10;
 }
 
 .container .nav-dropdown summary {
@@ -124,9 +127,7 @@ a:hover {
     border: 1px solid lightsteelblue;
     border-radius: 4px;
     list-style: none;
-    z-index: 10;
 }
-
 
 .container .dropdown {
     display: flex;
@@ -324,9 +325,8 @@ a:hover {
 
 #arena {
     position: relative;
-    margin: 24px auto;
-    border: 2px solid #333;
-    background: #111;
+    margin: 0px;
+    padding: 0px;
     overflow: hidden; /* keep square clipped inside */
 }
 
