@@ -1,7 +1,7 @@
 <div class="panel-small">
   {% include container.html
     label="photo.jpg"
-    content="<img src="../assets/images/bio-photo.jpg" style="display: block; width:100%; height:auto;"/>"
+    content="<img src="{{ /assets/bio-photo.jpg | relative_url }}" style="display: block; width:100%; height:auto;"/>"
   %}
 
   {% include container.html
