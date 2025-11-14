@@ -68,8 +68,8 @@
       <div class="container-header">
         contact.txt
         <div class="circle-container">
-          <div class="circle" style="background-color: red"></div>
-          <div class="circle" style="background-color: lime"></div>
+          <div class="circle" style="background-color: #00FF41"></div>
+          <div class="circle" style="background-color: #FF004D"></div>
         </div>
       </div>
       <div class="container-content">
@@ -161,8 +161,8 @@
       <div class="container-header">
         claimcheck.tex
         <div class="circle-container">
-          <div class="circle" style="background-color: red"></div>
-          <div class="circle" style="background-color: lime"></div>
+          <div class="circle" style="background-color: #00FF41"></div>
+          <div class="circle" style="background-color: #FF004D"></div>
         </div>
       </div>      
       <div class="container-content" >
@@ -187,8 +187,8 @@
       <div class="container-header">
         final_answer.tex
         <div class="circle-container">
-          <div class="circle" style="background-color: red"></div>
-          <div class="circle" style="background-color: lime"></div>
+          <div class="circle" style="background-color: #00FF41"></div>
+          <div class="circle" style="background-color: #FF004D"></div>
         </div>
       </div>      
       <div class="container-content" >
@@ -221,8 +221,8 @@
       <div class="container-header">
         ccot.tex
         <div class="circle-container">
-          <div class="circle" style="background-color: red"></div>
-          <div class="circle" style="background-color: lime"></div>
+          <div class="circle" style="background-color: #00FF41"></div>
+          <div class="circle" style="background-color: #FF004D"></div>
         </div>
       </div>      
       <div class="container-content" >
@@ -250,8 +250,8 @@
       <div class="container-header">
         timestamp.tex
         <div class="circle-container">
-          <div class="circle" style="background-color: red"></div>
-          <div class="circle" style="background-color: lime"></div>
+          <div class="circle" style="background-color: #00FF41"></div>
+          <div class="circle" style="background-color: #FF004D"></div>
         </div>
       </div>      
       <div class="container-content" >
@@ -288,8 +288,8 @@
       <div class="container-header">
         mixing.tex
         <div class="circle-container">
-          <div class="circle" style="background-color: red"></div>
-          <div class="circle" style="background-color: lime"></div>
+          <div class="circle" style="background-color: #00FF41"></div>
+          <div class="circle" style="background-color: #FF004D"></div>
         </div>
       </div>      
       <div class="container-content" >
@@ -313,37 +313,42 @@
 </div>
 
 
-<div id="square"></div>
+<div class="blob" style="--color: #00FF41"></div>
+<div class="blob" style="--color: #FF004D"></div>
+<div class="blob" style="--color: #00CAFF"></div>
 
 </div>
 
 <script>
   const arena = document.getElementById("arena");
-  const square = document.getElementById("square");
+  const blobs = document.getElementsByClassName("blob")
+  const nblobs = 3;
+  const speed = 2;
 
-  let x = 20;   // starting x (px, inside the arena)
-  let y = 20;   // starting y
-  let vx = 1; // horizontal speed (px/frame)
-  let vy = 1; // vertical speed
+  const maxX = arena.clientWidth  - blobs[0].offsetWidth;
+  const maxY = arena.clientHeight - blobs[0].offsetHeight;
+
+  let x = Array.from({ length: nblobs}, () => Math.floor(Math.random()*maxX));
+  let y = Array.from({ length: nblobs}, () => Math.floor(Math.random()*maxY));
+  let vx = Array.from({ length: nblobs }, () => Math.random() < 0.5 ? speed : -speed);
+  let vy = Array.from({ length: nblobs }, () => Math.random() < 0.5 ? speed : -speed);
 
   function animate() {
     // size of container minus size of square (clientWidth excludes borders)
-    const maxX = arena.clientWidth  - square.offsetWidth;
-    const maxY = arena.clientHeight - square.offsetHeight;
+    for (let i = 0; i < x.length; i++) {
+      x[i] += vx[i];
+      y[i] += vy[i];
 
-    x += vx;
-    y += vy;
+      // bounce with clamping to avoid getting stuck outside
+      if (x[i]<= 0) { x[i]= 0; vx[i]= Math.abs(vx[i]); }
+      else if (x[i]>= maxX) { x[i]= maxX; vx[i]= -Math.abs(vx[i]); }
 
-    // bounce with clamping to avoid getting stuck outside
-    if (x <= 0) { x = 0; vx = Math.abs(vx); }
-    else if (x >= maxX) { x = maxX; vx = -Math.abs(vx); }
+      if (y[i] <= 0) { y[i] = 0; vy[i] = Math.abs(vy[i]); }
+      else if (y[i] >= maxY) { y[i]= maxY; vy[i]= -Math.abs(vy[i]); }
 
-    if (y <= 0) { y = 0; vy = Math.abs(vy); }
-    else if (y >= maxY) { y = maxY; vy = -Math.abs(vy); }
-
-    square.style.left = x + "px";
-    square.style.top  = y + "px";
-
+      blobs[i].style.left = x[i] + "px";
+      blobs[i].style.top  = y[i] + "px";
+    }
     requestAnimationFrame(animate);
   }
 
