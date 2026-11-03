@@ -12,6 +12,7 @@
   <!-- CSS (optional, create styles.css if needed) -->
   <link rel="stylesheet" href="style.css">
 
+  <script src="./theme.js"></script>
   <script src="https://kit.fontawesome.com/1eccfb7f64.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link href="https://db.onlinewebfonts.com/c/0253e1401c58c5911902cdca02857f0e?family=White+Rabbit+Regular" rel="stylesheet">
@@ -29,23 +30,31 @@
       </div>
     </a>
   </div>
-  <div class="nav-bar">
-    <a href="#"><div>About Me</div></a>
-    <div class="vertical-line"></div>
-    <a href="./publications/index.html"><div>Publications</div></a>
-    <div class="vertical-line"></div>
-    <a href="./assets/cv_jeffrey_cheng.pdf"><div>CV</div></a>
-  </div>
+  <div class="header-right">
+    <div class="nav-bar">
+      <a href="#"><div>About Me</div></a>
+      <div class="vertical-line"></div>
+      <a href="./publications/index.html"><div>Publications</div></a>
+      <div class="vertical-line"></div>
+      <a href="./assets/cv_jeffrey_cheng.pdf"><div>CV</div></a>
+      <div class="vertical-line"></div>
+    </div>
 
-  <details class="nav-dropdown">
-    <summary></summary>
-    <nav class="dropdown">
-      <a href="./index.html">About Me</a>
-      <a href="./publications/index.html">Publications</a>
-      <a href="./assets/cv_jeffrey_cheng.pdf">CV</a>
-    </nav>
-  </details>
-  <div class="overlay" style="z-index: 11"></div>
+    <button class="theme-toggle" type="button" aria-label="Toggle light/dark theme" title="Toggle theme">
+      <span class="icon-moon"><i class="fa-solid fa-moon"></i></span>
+      <span class="icon-sun"><i class="fa-solid fa-sun"></i></span>
+    </button>
+
+    <details class="nav-dropdown">
+      <summary></summary>
+      <nav class="dropdown">
+        <a href="./index.html">About Me</a>
+        <a href="./publications/index.html">Publications</a>
+        <a href="./assets/cv_jeffrey_cheng.pdf">CV</a>
+      </nav>
+    </details>
+    <div class="overlay" style="z-index: 11"></div>
+  </div>
 
 </div>
 
@@ -307,41 +316,7 @@
 
 </div>
 
-<script>
-  const arena = document.getElementById("arena");
-  const blobs = document.getElementsByClassName("blob")
-  const nblobs = 3;
-  const speed = 2;
-
-  const maxX = arena.clientWidth  - blobs[0].offsetWidth;
-  const maxY = arena.clientHeight - blobs[0].offsetHeight;
-
-  let x = Array.from({ length: nblobs}, () => Math.floor(Math.random()*maxX));
-  let y = Array.from({ length: nblobs}, () => Math.floor(Math.random()*maxY));
-  let vx = Array.from({ length: nblobs }, () => Math.random() < 0.5 ? speed : -speed);
-  let vy = Array.from({ length: nblobs }, () => Math.random() < 0.5 ? speed : -speed);
-
-  function animate() {
-    // size of container minus size of square (clientWidth excludes borders)
-    for (let i = 0; i < x.length; i++) {
-      x[i] += vx[i];
-      y[i] += vy[i];
-
-      // bounce with clamping to avoid getting stuck outside
-      if (x[i]<= 0) { x[i]= 0; vx[i]= Math.abs(vx[i]); }
-      else if (x[i]>= maxX) { x[i]= maxX; vx[i]= -Math.abs(vx[i]); }
-
-      if (y[i] <= 0) { y[i] = 0; vy[i] = Math.abs(vy[i]); }
-      else if (y[i] >= maxY) { y[i]= maxY; vy[i]= -Math.abs(vy[i]); }
-
-      blobs[i].style.left = x[i] + "px";
-      blobs[i].style.top  = y[i] + "px";
-    }
-    requestAnimationFrame(animate);
-  }
-
-  animate();
-</script>
+<script src="./blobs.js"></script>
 
 </body>
 </html>

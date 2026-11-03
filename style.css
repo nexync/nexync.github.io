@@ -1,24 +1,57 @@
+/* ---------- Themes ---------- */
+
+/* Dark theme (default) - the original site colors */
+:root {
+    color-scheme: dark;
+    --bg: #101010;
+    --text: aliceblue;
+    --link: lightsteelblue;
+    --accent: #00FF41;
+    --overlay: rgba(0, 0, 0, 0.2);
+    --surface: #1c1c1d;
+    --border: lightgrey;
+    --container-bg: rgba(40, 40, 44, 0.5);  /* lifted off --bg so windows read as separate */
+    --container-header-bg: rgba(0, 0, 0, 1);
+    --container-link: #00CAFF;
+}
+
+/* Light theme - backgrounds chosen (linen); other colors still placeholders */
+:root[data-theme="light"] {
+    color-scheme: light;
+    --bg: rgb(231.5, 226.5, 213.5);             /* linen */
+    --text: #1e2630;                            /* TODO: placeholder */
+    --link: #3d5a80;                            /* TODO: placeholder */
+    --accent: #0a8f3c;                          /* TODO: placeholder */
+    --overlay: rgba(255, 255, 255, 0.3);        /* TODO: placeholder */
+    --surface: #ffffff;                         /* TODO: placeholder */
+    --border: #b8bec6;                          /* TODO: placeholder */
+    --container-bg: rgba(252.5, 250.5, 244, 0.575);
+    --container-header-bg: #e4e7eb;             /* TODO: placeholder */
+    --container-link: #0070b0;                  /* TODO: placeholder */
+}
+
+
 body {
-    background-color: #101010;
-    color: aliceblue;
+    background-color: var(--bg);
+    color: var(--text);
     cursor: crosshair;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 a, a:visited, a:active, a:focus {
-    color: lightsteelblue; 
+    color: var(--link); 
     text-decoration: underline;
 }
 
 a:hover {
-    color:#00FF41;
+    color:var(--accent);
 }
 
 .overlay {
     position: fixed;
     inset: 0;
     backdrop-filter: blur(4px);
-    background: rgba(0,0,0,0.2);
+    background: var(--overlay);
     display: none;
     z-index: 5;
 }
@@ -46,12 +79,12 @@ a:hover {
 }
 
 .header a {
-    color: aliceblue;
+    color: var(--text);
     text-decoration: none;
 }
 
 .header a:hover {
-    color: #00FF41
+    color: var(--accent)
 }
 
 .header a div {
@@ -67,7 +100,7 @@ a:hover {
     bottom: 0;
     width: 0;
     height: 2px;
-    background-color: #00FF41;
+    background-color: var(--accent);
     transition: width 0.3s ease, left 0.3s ease;
 }
 
@@ -86,6 +119,56 @@ a:hover {
     display: none;
 }
 
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+/* Theme toggle: moon in dark mode, sun in light mode; hovering previews the other */
+.theme-toggle {
+    background: none;
+    border: none;
+    padding: 0.1em;
+    margin: 0;
+    color: var(--text);
+    font-size: 0.9em;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.theme-toggle:hover {
+    color: var(--accent);
+}
+
+
+.theme-toggle .icon-sun {
+    display: none;
+}
+
+:root[data-theme="light"] .theme-toggle .icon-sun {
+    display: inline;
+}
+
+:root[data-theme="light"] .theme-toggle .icon-moon {
+    display: none;
+}
+
+/* only swap on real hover, so the icon doesn't stick after a tap on touch screens */
+@media (hover: hover) {
+    .theme-toggle:hover .icon-moon {
+        display: none;
+    }
+    .theme-toggle:hover .icon-sun {
+        display: inline;
+    }
+    :root[data-theme="light"] .theme-toggle:hover .icon-sun {
+        display: none;
+    }
+    :root[data-theme="light"] .theme-toggle:hover .icon-moon {
+        display: inline;
+    }
+}
+
 .header details {
     z-index: 15;
 }
@@ -96,12 +179,12 @@ a:hover {
     position: absolute;
     top: 100%;
     right: 0%;
-    background: #1c1c1d;
+    background: var(--surface);
     min-width: 150px;
     z-index: 15;
     padding: 10px 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    border: 1px solid aliceblue;
+    border: 1px solid var(--text);
 }
 
 .header .dropdown a {
@@ -119,10 +202,10 @@ a:hover {
 }
 
 .container .nav-dropdown summary {
-    color: lightsteelblue;
+    color: var(--link);
     margin: 0 auto;
     padding: 5px;
-    border: 1px solid lightsteelblue;
+    border: 1px solid var(--link);
     border-radius: 4px;
     list-style: none;
 }
@@ -134,12 +217,12 @@ a:hover {
     top: 100%;
     left: 50%;
     transform: translateX(-50%); /* shift back by half width */
-    background: #1c1c1d;
+    background: var(--surface);
     width: 100px;
     z-index: 10;
     padding: 10px 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    border: 1px solid aliceblue;
+    border: 1px solid var(--text);
     margin-top: 0.5em;
 }
 
@@ -150,8 +233,8 @@ a:hover {
 }
 
 .container details[open] summary {
-    color: #00FF41;
-    border-color: #00FF41;
+    color: var(--accent);
+    border-color: var(--accent);
 }
 
 .container details[open] ~ .overlay {
@@ -160,9 +243,9 @@ a:hover {
 
 
 .container {
-    border: 1px solid lightgrey;
+    border: 1px solid var(--border);
     border-radius: 4px;
-    background-color: rgba(16, 16, 16, 0.1);
+    background-color: var(--container-bg);
     margin: 1em auto;
     font-size: 1.1em;
     z-index: 1;
@@ -171,7 +254,7 @@ a:hover {
 }
 
 .container a {
-    color: #00CAFF;
+    color: var(--container-link);
     text-decoration: none;
 }
 
@@ -193,7 +276,7 @@ a:hover {
 }
 
 .container-header {
-    background-color: rgba(0, 0, 0, 1);
+    background-color: var(--container-header-bg);
     padding: 3px 10px;
     margin: 1px;
     font-size: 0.6em;
@@ -220,7 +303,7 @@ a:hover {
 
 .container-content {
     padding: 1em;
-    border-top: 1px solid lightgrey;
+    border-top: 1px solid var(--border);
 }
 
 .container-content p {
@@ -235,11 +318,11 @@ a:hover {
 }
 
 .link i {
-    color: aliceblue
+    color: var(--text)
 }
 
 .link i:hover {
-    color: #00FF41;
+    color: var(--accent);
 }
 
 .list {
@@ -249,7 +332,7 @@ a:hover {
 .vertical-line {
   width: 1px;
   height: 1em;           
-  background-color: aliceblue; 
+  background-color: var(--text); 
   margin: 0 0.5em;
 }
 
@@ -279,9 +362,9 @@ a:hover {
 
 .paper-link-button {
     display: inline-block;
-    background-color: #101010;
-    color: aliceblue;
-    border: 1px solid lightsteelblue;
+    background-color: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--link);
     border-radius: 4px;
     padding: 5px 10px 5px 10px;
     margin-right: 10px;
@@ -295,15 +378,24 @@ a:hover {
 }
 
 .paper-link-button:hover {
-    color: #00FF41;
-    border-color: #00FF41;
+    color: var(--accent);
+    border-color: var(--accent);
 }
 
 .highlight {
     text-decoration: underline;
 }
 
-:target {
+/* flash a green outline over the border; 2px so it survives pixel snapping
+   at fractional display scales (e.g. 150%), where 1px edges render unevenly */
+.container:target::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border: 2px solid var(--accent);
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
     animation: flashBorder 5s ease;
 }
 
@@ -325,6 +417,27 @@ a:hover {
       0 0 20px var(--color),
       0 0 40px var(--color);  
     z-index: 0;        /* glowing aura */
+    /* blobs are moved with `translate` from blobs.js; giving each its own GPU layer
+       means the blur + glow is painted once and then just slid around, no repaints */
+    will-change: translate, scale;
+    transition: scale 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* invisible padding so the small, moving blobs are actually clickable */
+.blob::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+}
+
+/* easter egg: a blob that has been clicked grows and glows brighter */
+.blob.caught {
+    scale: 1.5;  /* applied before the `translate` set by blobs.js, so it grows in place */
+    box-shadow:
+      0 0 15px var(--color),
+      0 0 30px var(--color),
+      0 0 60px var(--color);
 }
 
 #arena {
@@ -336,16 +449,19 @@ a:hover {
 
 
 @keyframes flashBorder {
-  0%   { border-color: aliceblue; }
-  25%  { border-color: #00FF41; }
-  50% { border-color: aliceblue; }
-  75%  { border-color: #00FF41; }
-  100% { border-color: aliceblue; }
+  0%   { opacity: 0; }
+  25%  { opacity: 1; }
+  50%  { opacity: 0; }
+  75%  { opacity: 1; }
+  100% { opacity: 0; }
 }
 
 @media (max-width: 600px) {
     .nav-bar {
         display: none;
+    }
+    .theme-toggle {
+        margin-right: 0.5em;
     }
     .nav-dropdown {
         position: relative;
