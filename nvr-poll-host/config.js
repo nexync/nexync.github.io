@@ -7,8 +7,8 @@ window.POLL_CONFIG = {
 
   // Google Apps Script web app /exec URL (see apps-script/SETUP.md). Same URL in both fields.
   // Empty = no backend: the page shows its cached copy only (or use ?demo).
-  submitUrl: "", // paste the Apps Script /exec URL (apps-script/SETUP.md)
-  resultsUrl: "", // paste the Apps Script /exec URL (apps-script/SETUP.md)
+  submitUrl: "https://script.google.com/macros/s/AKfycbzK56HZAZrACTWvprR1nGta0AsVy3OE0IFl-Y31qJxc3YeRYNQVIEDu7jss9ETiQ-0N/exec", // paste the Apps Script /exec URL (apps-script/SETUP.md)
+  resultsUrl: "https://script.google.com/macros/s/AKfycbzK56HZAZrACTWvprR1nGta0AsVy3OE0IFl-Y31qJxc3YeRYNQVIEDu7jss9ETiQ-0N/exec", // paste the Apps Script /exec URL (apps-script/SETUP.md)
 
   // How often the host re-fetches answers (ms).
   refreshMs: 4000,
