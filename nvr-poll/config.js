@@ -4,12 +4,12 @@ window.POLL_CONFIG = {
 
   // Where phones send answers (HTTP POST, JSON body). Empty = answers stay on each phone.
   // For a Google Apps Script web app, paste its /exec URL here.
-  submitUrl: "", // paste the Apps Script /exec URL (apps-script/SETUP.md)
+  submitUrl: "https://script.google.com/macros/s/AKfycbzK56HZAZrACTWvprR1nGta0AsVy3OE0IFl-Y31qJxc3YeRYNQVIEDu7jss9ETiQ-0N/exec", // paste the Apps Script /exec URL (apps-script/SETUP.md)
 
   // Where results.html reads all answers (HTTP GET). It should return either
   //   [ { "name": "...", "answers": { "A": 0.62, ..., "H": 0.1 } }, ... ]
   // or { "responses": [ ...same objects... ] }. Usually the same URL as submitUrl.
-  resultsUrl: "", // paste the Apps Script /exec URL (apps-script/SETUP.md)
+  resultsUrl: "https://script.google.com/macros/s/AKfycbzK56HZAZrACTWvprR1nGta0AsVy3OE0IFl-Y31qJxc3YeRYNQVIEDu7jss9ETiQ-0N/exec", // paste the Apps Script /exec URL (apps-script/SETUP.md)
 
   // How often results.html re-fetches while open (ms).
   refreshMs: 5000,
