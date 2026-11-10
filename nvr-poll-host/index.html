@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101010">
+<title>Verifiability poll · Host</title>
+<style>
+  :root {
+    --bg: #101010; --card: #1c1c1e; --rule: #3a3a3c; --border: #d3d3d3;
+    --text: #f0f8ff; --muted: #a9b1bb;
+    --red: #ff004d; --green: #00ff41; --blue: #00caff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; background: var(--bg); color: var(--text); }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "IBM Plex Sans", Arial, sans-serif; }
+  button, input { font: inherit; color: inherit; }
+  button { border: 0; background: none; cursor: pointer; }
+  .screen { display: none; min-height: 100vh; padding: clamp(16px, 4vw, 80px); }
+  .screen.on { display: flex; flex-direction: column; gap: clamp(16px, 3vh, 40px); }
+  .eyebrow { font-size: clamp(12px, 1.1vw, 20px); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--red); }
+  h1 { font-family: Georgia, "Source Serif 4", serif; font-weight: 600; font-size: clamp(26px, 3.6vw, 64px); line-height: 1.1; margin-top: 8px; }
+  .muted { color: var(--muted); }
+
+  /* ---------- lobby ---------- */
+  #lobby.on { display: grid; grid-template-columns: minmax(0, auto) minmax(0, 1fr); align-items: center;
+    gap: clamp(24px, 4vw, 80px); }
+  .qr { width: min(72vh, 40vw); aspect-ratio: 1; background: var(--text); border: 1px solid var(--border);
+    border-radius: 20px; padding: clamp(14px, 2vw, 32px); display: grid; place-items: center; overflow: hidden; }
+  .qr canvas, .qr img { width: 100% !important; height: 100% !important; image-rendering: pixelated; display: block; }
+  .qr .fallback { color: #101010; font-size: clamp(18px, 2vw, 34px); font-weight: 700; text-align: center; word-break: break-all; }
+  .side { display: flex; flex-direction: column; gap: clamp(14px, 2.4vh, 32px); min-width: 0; }
+  .url { font-size: clamp(18px, 2.2vw, 40px); font-weight: 700; color: var(--blue); word-break: break-all; }
+  .counter { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  .counter .n { font-size: clamp(48px, 7vw, 128px); font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+  .counter .of { font-size: clamp(18px, 2vw, 36px); color: var(--muted); }
+  .counter .ready { font-size: clamp(14px, 1.3vw, 22px); font-weight: 700; color: var(--green); letter-spacing: .08em; text-transform: uppercase; }
+  .names { display: flex; flex-wrap: wrap; gap: 8px; max-height: 22vh; overflow-y: auto; }
+  .names span { padding: 6px 12px; border-radius: 999px; background: var(--card); border: 1px solid var(--rule);
+    font-size: clamp(13px, 1.1vw, 19px); }
+  .names span.new { border-color: var(--green); color: var(--green); }
+  .go { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { padding: 14px 20px; border-radius: 12px; font-size: clamp(15px, 1.2vw, 20px); font-weight: 700;
+    background: var(--text); color: #101010; text-align: left; }
+  .btn small { display: block; font-size: .75em; font-weight: 600; opacity: .7; }
+  .btn:disabled { background: var(--card); color: var(--muted); border: 1px solid var(--rule); cursor: not-allowed; }
+  .btn.alt { background: none; color: var(--text); border: 1px solid var(--border); }
+  .btn.alt:disabled { border-color: var(--rule); color: var(--muted); }
+  .tools { display: flex; gap: 10px 18px; flex-wrap: wrap; align-items: center; font-size: 14px; color: var(--muted); }
+  .tools label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+  .tools input[type=number] { width: 64px; padding: 4px 8px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); }
+  .tools input[type=checkbox] { accent-color: var(--blue); }
+  .small { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--rule); color: var(--text); font-size: 14px; }
+  .small:hover { border-color: var(--border); }
+  .status { font-size: 14px; color: var(--muted); }
+  .status .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; background: var(--muted); }
+  .status.live .dot { background: var(--green); }
+  .status.off .dot { background: var(--red); }
+  @media (max-width: 760px) { #lobby.on { grid-template-columns: 1fr; } .qr { width: min(100%, 60vh); } }
+
+  /* ---------- results ---------- */
+  #results { padding-top: clamp(16px, 5vh, 72px); padding-bottom: clamp(16px, 4vh, 56px); }
+  .bar { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+  .foot { font-size: clamp(12px, 1vw, 16px); color: var(--muted); }
+  .pager { display: flex; gap: 8px; }
+  .pager i { width: 10px; height: 10px; border-radius: 50%; background: var(--rule); }
+  .pager i.on { background: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- Lobby: QR + live counter -->
+<section class="screen on" id="lobby">
+  <div class="qr" id="qr" aria-label="QR code for the poll"></div>
+  <div class="side">
+    <div>
+      <p class="eyebrow">Lab meeting · Activity</p>
+      <h1>Scan to place eight tasks on the verifiability scale</h1>
+    </div>
+    <p class="url" id="url"></p>
+    <div class="counter">
+      <span class="n" id="n">0</span><span class="of" id="of">/ 8 answers</span><span class="ready" id="ready" hidden>Ready</span>
+    </div>
+    <div class="names" id="names"></div>
+    <div class="go">
+      <button class="btn" id="go-same" disabled>Show results 1<small>Same task, different audience</small></button>
+      <button class="btn" id="go-experts" disabled>Show results 2<small>Different tasks, experts</small></button>
+      <button class="btn alt" id="go-all" disabled>All eight<small>Every task</small></button>
+    </div>
+    <div class="tools">
+      <label>Unlock at <input type="number" id="threshold" min="1" max="999" step="1"> answers</label>
+      <label><input type="checkbox" id="override"> show anyway</label>
+      <button class="small" id="csv">Export CSV</button>
+      <button class="small" id="json">Export JSON</button>
+      <button class="small" id="clear">Clear local copy</button>
+      <button class="small" id="fs">Full screen (F)</button>
+    </div>
+    <p class="status" id="status"><span class="dot"></span><span id="status-text">Starting…</span></p>
+  </div>
+</section>
+
+<!-- Results: one view at a time -->
+<section class="screen" id="results">
+  <div>
+    <p class="eyebrow">Activity · Results</p>
+    <h1 id="title"></h1>
+  </div>
+  <div id="scales"></div>
+  <div class="bar">
+    <p class="foot" id="foot"></p>
+    <div class="bar" style="align-items:center">
+      <p class="foot">← → switch · Esc lobby</p>
+      <div class="pager" id="pager"></div>
+    </div>
+  </div>
+</section>
+
+<script src="config.js"></script>
+<script src="poll-render.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+  integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" onerror="window.__qrFailed = true"></script>
+<script>
+const CFG = window.POLL_CONFIG;
+const PR = window.PollRender;
+const VIEWS = PR.VIEWS;
+const $ = (id) => document.getElementById(id);
+const DEMO = new URLSearchParams(location.search).has("demo");
+const KEY = CFG.pollId + ":host:" + (DEMO ? "demo:" : "");
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(KEY + k)); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(KEY + k, JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem(KEY + k); } catch {} },
+};
+
+let responses = [];          // latest per name
+let lastSig = "";
+let seen = null;             // names already shown (for the "new" highlight); null = first render
+let view = null;             // null = lobby
+let threshold = Number(store.get("threshold")) || CFG.threshold || 8;
+const status = { kind: "", text: "" };
+
+/* ---------- QR ---------- */
+function drawQr() {
+  const box = $("qr");
+  $("url").textContent = CFG.pollUrl.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  if (window.QRCode && !window.__qrFailed) {
+    try {
+      new QRCode(box, { text: CFG.pollUrl, width: 512, height: 512, colorDark: "#101010", colorLight: "#f0f8ff",
+        correctLevel: QRCode.CorrectLevel.M });
+      return;
+    } catch (err) { console.error(err); }
+  }
+  box.innerHTML = "";
+  const p = document.createElement("p");
+  p.className = "fallback";
+  p.textContent = CFG.pollUrl.replace(/^https?:\/\//, "");
+  box.appendChild(p);
+}
+
+/* ---------- data ---------- */
+let demoPool = null, demoShown = 0;
+function demoTick() {
+  if (!demoPool) {
+    demoPool = PR.demoResponses(18);
+    // one person resubmits after changing their mind (count must not go up)
+    const again = { ...demoPool[1], answers: { ...demoPool[1].answers, A: 0.95, B: 0.05 }, submittedAt: new Date().toISOString() };
+    demoPool.splice(11, 0, again);
+  }
+  demoShown = Math.min(demoPool.length, demoShown + 1);
+  return demoPool.slice(0, demoShown);
+}
+
+async function load() {
+  if (DEMO) {
+    setData(PR.latestPerName(demoTick()));
+    setStatus("live", `Demo mode: fake answers arriving (${demoShown}/${demoPool.length} submissions)`);
+    return;
+  }
+  if (!CFG.resultsUrl) {
+    const c = store.get("cache");
+    if (c) setData(c.responses);
+    setStatus("off", "No resultsUrl in config.js" + (c ? `; showing local copy from ${time(c.savedAt)}` : "") + ". Open with ?demo to rehearse.");
+    return;
+  }
+  try {
+    const list = PR.latestPerName(await PR.fetchResponses(CFG.resultsUrl, CFG.pollId));
+    store.set("cache", { savedAt: new Date().toISOString(), responses: list });
+    setData(list);
+    setStatus("live", `Live · updated ${time(new Date())}`);
+  } catch (err) {
+    console.error(err);
+    const c = store.get("cache");
+    if (c && !responses.length) setData(c.responses);
+    setStatus("off", "Can't reach the results source" +
+      (c ? `. Showing local copy from ${time(c.savedAt)} (${c.responses.length} answers)` : "") + ". Retrying…");
+  }
+}
+
+function setData(list) {
+  const sig = JSON.stringify(list);
+  if (sig === lastSig) return;
+  lastSig = sig;
+  responses = list;
+  renderLobby();
+  if (view) renderResults();
+}
+
+function setStatus(kind, text) {
+  const changed = kind !== status.kind;
+  status.kind = kind; status.text = text;
+  if (changed && view) renderResults();
+  $("status").className = "status " + kind;
+  $("status-text").textContent = text;
+}
+
+const time = (d) => new Date(d).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+
+/* ---------- lobby ---------- */
+const unlocked = () => responses.length >= threshold || $("override").checked;
+
+function renderLobby() {
+  const n = responses.length;
+  $("n").textContent = n;
+  const reached = n >= threshold;
+  $("of").textContent = reached ? (n === 1 ? "answer" : "answers") : `/ ${threshold} answers`;
+  $("ready").hidden = !reached;
+  const box = $("names");
+  box.innerHTML = "";
+  for (const r of responses) {
+    const s = document.createElement("span");
+    s.textContent = r.name;
+    if (seen && !seen.has(r.name.toLowerCase())) s.className = "new";
+    box.appendChild(s);
+  }
+  // newcomers stay highlighted until the next change in the list
+  seen = new Set(responses.map((r) => r.name.toLowerCase()));
+  box.scrollTop = box.scrollHeight;
+  const ok = unlocked();
+  for (const id of ["go-same", "go-experts", "go-all"]) $(id).disabled = !ok;
+}
+
+$("threshold").value = threshold;
+$("threshold").addEventListener("input", () => {
+  const v = Math.max(1, Math.round(Number($("threshold").value) || 1));
+  threshold = v;
+  store.set("threshold", v);
+  renderLobby();
+});
+$("override").addEventListener("change", renderLobby);
+$("go-same").onclick = () => showView(VIEWS[0]);
+$("go-experts").onclick = () => showView(VIEWS[1]);
+$("go-all").onclick = () => showView(VIEWS[2]);
+
+/* ---------- results ---------- */
+function showView(v) {
+  view = v;
+  history.replaceState(null, "", "#" + v.key);
+  $("lobby").classList.remove("on");
+  $("results").classList.add("on");
+  renderResults();
+}
+function lobby() {
+  view = null;
+  history.replaceState(null, "", location.pathname + location.search);
+  $("results").classList.remove("on");
+  $("lobby").classList.add("on");
+  renderLobby();
+}
+
+function renderResults() {
+  $("title").textContent = view.title;
+  PR.renderView($("scales"), view, responses, CFG.items);
+  const n = responses.length;
+  $("foot").textContent = n
+    ? `Room averages from ${n} ${n === 1 ? "person" : "people"}. Small dots are individual answers.` +
+      (status.kind === "off" ? " (offline: local copy)" : "")
+    : "";
+  $("pager").innerHTML = VIEWS.map((v) => `<i class="${v === view ? "on" : ""}"></i>`).join("");
+}
+
+/* ---------- keyboard / clicker ---------- */
+document.addEventListener("keydown", (e) => {
+  if (e.target.matches("input") && e.key !== "Escape") return;
+  const next = ["ArrowRight", "PageDown", " "].includes(e.key);
+  const prev = ["ArrowLeft", "PageUp"].includes(e.key);
+  if (e.key === "f" || e.key === "F") { toggleFs(); return; }
+  if (!view) {
+    if (next && unlocked()) { e.preventDefault(); showView(VIEWS[0]); }
+    if (["1", "2", "3"].includes(e.key) && unlocked()) showView(VIEWS[Number(e.key) - 1]);
+    return;
+  }
+  const i = VIEWS.indexOf(view);
+  if (e.key === "Escape") { lobby(); return; }
+  if (next) { e.preventDefault(); showView(VIEWS[Math.min(VIEWS.length - 1, i + 1)]); }
+  if (prev) { e.preventDefault(); i === 0 ? lobby() : showView(VIEWS[i - 1]); }
+});
+function toggleFs() {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen?.().catch(() => {});
+}
+$("fs").onclick = toggleFs;
+window.addEventListener("resize", () => { if (view) renderResults(); });
+
+/* ---------- export ---------- */
+function download(name, type, text) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([text], { type }));
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+const stamp = () => new Date().toISOString().slice(0, 16).replace(/[-:]/g, "").replace("T", "-");
+const csvCell = (v) => {
+  let s = v == null ? "" : String(v);
+  if (/^[=+\-@]/.test(s)) s = "'" + s; // don't let spreadsheets run a name as a formula
+  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+};
+function toCsv(list) {
+  const ids = CFG.items.map((it) => it.id);
+  const rows = [["name", ...ids, "submittedAt"]];
+  for (const r of list) rows.push([r.name, ...ids.map((id) => r.answers[id] ?? ""), r.submittedAt || ""]);
+  return rows.map((row) => row.map(csvCell).join(",")).join("\r\n") + "\r\n";
+}
+$("csv").onclick = () => download(`${CFG.pollId}-${stamp()}.csv`, "text/csv;charset=utf-8", toCsv(responses));
+$("json").onclick = () => download(`${CFG.pollId}-${stamp()}.json`, "application/json",
+  JSON.stringify({ poll: CFG.pollId, exportedAt: new Date().toISOString(), demo: DEMO, responses }, null, 2));
+$("clear").onclick = () => {
+  if (!confirm("Forget the answers saved in this browser? (The Google Sheet is not touched.)")) return;
+  store.del("cache");
+  lastSig = ""; responses = []; seen = null;
+  if (DEMO) { demoPool = null; demoShown = 0; }
+  renderLobby();
+};
+
+/* ---------- start ---------- */
+drawQr();
+{
+  const c = !DEMO && store.get("cache");
+  if (c) { setData(c.responses); setStatus("off", `Local copy from ${time(c.savedAt)}; connecting…`); }
+}
+renderLobby();
+{
+  const v = VIEWS.find((x) => "#" + x.key === location.hash);
+  if (v) showView(v);
+}
+(async function loop() {
+  await load();
+  setTimeout(loop, DEMO ? 1200 : CFG.refreshMs || 4000);
+})();
+</script>
+</body>
+</html>

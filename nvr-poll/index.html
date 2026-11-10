@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101010">
+<title>Verifiability poll</title>
+<style>
+  :root {
+    --bg: #101010; --card: #1c1c1e; --rule: #3a3a3c; --border: #d3d3d3;
+    --text: #f0f8ff; --muted: #a9b1bb;
+    --red: #ff004d; --green: #00ff41; --blue: #00caff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "IBM Plex Sans", Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent; overscroll-behavior: none;
+    -webkit-text-size-adjust: 100%;
+  }
+  button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+  .screen { display: none; height: 100dvh; min-height: 100vh;
+    padding: calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom)); }
+  .screen.on { display: flex; flex-direction: column; }
+
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--red); }
+  h1 { font-family: Georgia, "Source Serif 4", serif; font-weight: 600; font-size: 28px; line-height: 1.15; }
+  .muted { color: var(--muted); }
+
+  /* name screen */
+  #name-screen { justify-content: center; gap: 20px; max-width: 480px; margin: 0 auto; }
+  #name-screen p { font-size: 16px; line-height: 1.45; }
+  input[type=text] {
+    width: 100%; font: inherit; font-size: 18px; color: var(--text);
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px;
+  }
+  input[type=text]:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
+  .btn {
+    width: 100%; padding: 15px 16px; border-radius: 12px; font-size: 17px; font-weight: 700;
+    background: var(--text); color: #101010;
+  }
+  .btn:disabled { background: var(--card); color: var(--muted); border: 1px solid var(--rule); }
+  .btn.ghost { background: none; color: var(--text); border: 1px solid var(--border); }
+
+  /* task screen */
+  #task-screen { gap: 10px; }
+  .top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .top h2 { font-size: 17px; font-weight: 700; line-height: 1.25; }
+  .count { font-size: 13px; color: var(--muted); white-space: nowrap; }
+  .hint { font-size: 13px; color: var(--muted); line-height: 1.35; }
+  .main { flex: 1; min-height: 0; display: flex; gap: 10px; }
+
+  .tray { flex: 1; min-width: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
+    padding-right: 2px; touch-action: pan-y; }
+  .card {
+    display: flex; gap: 8px; align-items: center; padding: 7px 8px; border-radius: 12px;
+    background: var(--card); border: 1px solid var(--border);
+    user-select: none; -webkit-user-select: none; touch-action: pan-y; cursor: grab;
+  }
+  .card .letter, .marker, .drag-ghost {
+    flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+    font-weight: 800; font-size: 14px; background: var(--text); color: #101010;
+  }
+  .card .txt { min-width: 0; font-size: 14px; line-height: 1.25; }
+  .card .who { display: block; }
+  .card .who { color: var(--green); }
+  .card .pct { font-weight: 700; color: var(--blue); }
+  .card.placed { border-color: var(--rule); }
+  .card.placed .letter { background: var(--blue); }
+  .card.lifted { opacity: .35; }
+
+  .scale { width: 100px; flex: none; display: flex; flex-direction: column; gap: 6px; }
+  .end { font-size: 12px; line-height: 1.25; color: var(--muted); }
+  .end b { display: block; color: var(--text); font-size: 13px; }
+  .track { position: relative; flex: 1; min-height: 0; touch-action: none; border-radius: 12px;
+    background: rgba(240, 248, 255, .03); }
+  .track.hot { background: rgba(0, 202, 255, .10); }
+  .bar { position: absolute; left: 18px; top: 0; bottom: 0; width: 6px; margin-left: -3px; border-radius: 3px;
+    background: linear-gradient(to top, var(--red), var(--blue)); }
+  .tick { position: absolute; left: 26px; font-size: 11px; color: var(--muted); transform: translateY(-50%); }
+  .marker { position: absolute; transform: translate(-50%, -50%); background: var(--blue);
+    box-shadow: 0 0 0 3px var(--bg); touch-action: none; cursor: grab; }
+  .marker.sel { background: var(--text); }
+  .guide { position: absolute; left: 0; right: 0; height: 0; border-top: 2px dashed var(--text); display: none; }
+  .guide span { position: absolute; right: 4px; top: -22px; font-size: 12px; font-weight: 700; }
+
+  .drag-ghost { position: fixed; z-index: 10; pointer-events: none; transform: translate(-50%, -50%);
+    background: var(--text); box-shadow: 0 6px 20px rgba(0,0,0,.6); width: 40px; height: 40px; font-size: 18px; }
+
+  .info { min-height: 38px; font-size: 13px; line-height: 1.35; color: var(--muted); }
+  .info b { color: var(--text); }
+
+  .send-msg { font-size: 13px; line-height: 1.35; color: var(--red); }
+  .send-msg:empty { display: none; }
+  .send-msg.ok { color: var(--muted); }
+
+  /* thanks screen */
+  #done-screen { gap: 16px; max-width: 480px; margin: 0 auto; }
+  .summary { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+  .row { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 10px; background: var(--card);
+    font-size: 14px; line-height: 1.25; }
+  .badge { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+    font-weight: 800; font-size: 14px; background: var(--blue); color: #101010; }
+  .row .pct { margin-left: auto; font-weight: 700; color: var(--blue); }
+</style>
+</head>
+<body>
+
+<!-- 1. Name -->
+<section class="screen on" id="name-screen">
+  <p class="eyebrow">Lab meeting · Activity</p>
+  <h1>Place each task on the verifiability scale</h1>
+  <p class="muted">Verifiability = how often two people from the audience would agree on a judgement.</p>
+  <input id="name" type="text" placeholder="Your name" autocomplete="name" autocapitalize="words" enterkeyhint="go" maxlength="60">
+  <button class="btn" id="start" disabled>Start</button>
+</section>
+
+<!-- 2. Drag A–H onto the scale -->
+<section class="screen" id="task-screen">
+  <div class="top">
+    <h2>Drag each task onto the scale</h2>
+    <span class="count" id="count">0 / 8</span>
+  </div>
+  <p class="hint">Drag a card right onto the line. Drag a marker to adjust it, or off the line to remove it.</p>
+  <div class="main">
+    <div class="tray" id="tray"></div>
+    <div class="scale">
+      <p class="end"><b>100%</b>An AIME answer</p>
+      <div class="track" id="track">
+        <div class="bar"></div>
+        <span class="tick" style="top:25%">75</span>
+        <span class="tick" style="top:50%">50</span>
+        <span class="tick" style="top:75%">25</span>
+        <div class="guide" id="guide"><span id="guide-pct"></span></div>
+      </div>
+      <p class="end"><b>0%</b>“Best number, 1000–2000”</p>
+    </div>
+  </div>
+  <p class="info" id="info">Tap a marker to see which task it is.</p>
+  <p class="send-msg" id="send-msg" role="status" aria-live="polite"></p>
+  <button class="btn" id="submit" disabled>Place all 8 to submit</button>
+</section>
+
+<!-- 3. Thanks -->
+<section class="screen" id="done-screen">
+  <p class="eyebrow">Submitted</p>
+  <h1 id="thanks">Thanks!</h1>
+  <p class="muted" id="done-note">Your answers are in. Watch the screen for the room's results.</p>
+  <div class="summary" id="summary"></div>
+  <button class="btn ghost" id="edit">Change my answers</button>
+</section>
+
+<script src="config.js"></script>
+<script>
+const CFG = window.POLL_CONFIG;
+const SUBMIT_URL = CFG.submitUrl;
+const POLL_ID = CFG.pollId;
+const ITEMS = CFG.items;
+
+/* ---------- state ---------- */
+const $ = (id) => document.getElementById(id);
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(POLL_ID + ":" + k)); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(POLL_ID + ":" + k, JSON.stringify(v)); } catch {} },
+};
+const state = { name: store.get("name") || "", pos: store.get("pos") || {} }; // pos: id -> 0..1 (1 = 100%)
+let selected = null;
+
+function show(id) {
+  document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("on", s.id === id));
+}
+const pct = (p) => Math.round(p * 100) + "%";
+const placedCount = () => ITEMS.filter((it) => state.pos[it.id] != null).length;
+const save = () => store.set("pos", state.pos);
+
+/* ---------- name screen ---------- */
+const nameInput = $("name");
+nameInput.value = state.name;
+const syncStart = () => ($("start").disabled = nameInput.value.trim().length < 1);
+nameInput.addEventListener("input", syncStart);
+nameInput.addEventListener("keydown", (e) => { if (e.key === "Enter" && !$("start").disabled) $("start").click(); });
+syncStart();
+$("start").addEventListener("click", () => {
+  state.name = nameInput.value.trim();
+  store.set("name", state.name);
+  nameInput.blur();
+  show("task-screen");
+  render();
+});
+
+/* ---------- rendering ---------- */
+const tray = $("tray"), track = $("track");
+
+function render() {
+  // tray: every item stays listed; placed ones show their value
+  tray.innerHTML = "";
+  for (const it of ITEMS) {
+    const p = state.pos[it.id];
+    const el = document.createElement("div");
+    el.className = "card" + (p != null ? " placed" : "");
+    el.dataset.id = it.id;
+    el.innerHTML =
+      `<span class="letter">${it.id}</span>` +
+      `<span class="txt">${it.task}<span class="who">${it.who}` +
+      (p != null ? ` · <span class="pct">${pct(p)}</span>` : "") + `</span></span>`;
+    el.addEventListener("pointerdown", (e) => pressCard(e, it.id, el));
+    tray.appendChild(el);
+  }
+
+  // markers: spread into lanes so close values don't overlap
+  track.querySelectorAll(".marker").forEach((m) => m.remove());
+  const h = track.clientHeight, W = track.clientWidth;
+  const placed = ITEMS.filter((it) => state.pos[it.id] != null)
+    .map((it) => ({ id: it.id, y: (1 - state.pos[it.id]) * h }))
+    .sort((a, b) => a.y - b.y);
+  const laneLast = [];
+  for (const m of placed) {
+    let lane = laneLast.findIndex((y) => m.y - y >= 28);
+    if (lane === -1) { lane = laneLast.length; }
+    laneLast[lane] = m.y;
+    const el = document.createElement("div");
+    el.className = "marker" + (selected === m.id ? " sel" : "");
+    el.textContent = m.id;
+    el.dataset.id = m.id;
+    el.style.top = m.y + "px";
+    el.style.left = Math.min(18 + lane * 28, W - 14) + "px";
+    el.addEventListener("pointerdown", (e) => pressMarker(e, m.id));
+    track.appendChild(el);
+  }
+
+  const n = placedCount();
+  $("count").textContent = `${n} / ${ITEMS.length}`;
+  const btn = $("submit");
+  btn.disabled = n < ITEMS.length;
+  btn.textContent = n < ITEMS.length ? `Place all 8 to submit (${ITEMS.length - n} left)` : "Submit";
+  showInfo();
+}
+
+function showInfo() {
+  const it = ITEMS.find((x) => x.id === selected);
+  $("info").innerHTML = it
+    ? `<b>${it.id} · ${it.task}</b>, as judged by ${it.who}` +
+      (state.pos[it.id] != null ? ` · <b>${pct(state.pos[it.id])}</b>` : "")
+    : "Tap a marker to see which task it is.";
+}
+
+/* ---------- dragging ---------- */
+let drag = null; // { id, pointerId, ghost, fromMarker, startX, startY, active }
+
+function pressCard(e, id, el) {
+  if (e.button > 0) return;
+  drag = { id, el, pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, active: false, fromMarker: false };
+}
+function pressMarker(e, id) {
+  e.preventDefault();
+  selected = id;
+  drag = { id, pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, active: false, fromMarker: true };
+  render();
+}
+
+function activate(e) {
+  drag.active = true;
+  const g = document.createElement("div");
+  g.className = "drag-ghost";
+  g.textContent = drag.id;
+  document.body.appendChild(g);
+  drag.ghost = g;
+  const card = tray.querySelector(`.card[data-id="${drag.id}"]`);
+  if (card) card.classList.add("lifted");
+  if (drag.fromMarker) {
+    const m = track.querySelector(`.marker[data-id="${drag.id}"]`);
+    if (m) m.style.visibility = "hidden";
+  }
+  move(e);
+}
+
+function overTrack(x, y) {
+  const r = track.getBoundingClientRect();
+  // generous target: anything right of the tray's middle and within the track's height band
+  return x >= r.left - 48 && x <= r.right + 16 && y >= r.top - 40 && y <= r.bottom + 40;
+}
+function valueAt(y) {
+  const r = track.getBoundingClientRect();
+  return Math.min(1, Math.max(0, 1 - (y - r.top) / r.height));
+}
+
+function move(e) {
+  // lift the ghost above the finger so it stays visible on touch screens
+  const lift = e.pointerType === "touch" ? 44 : 0;
+  const x = e.clientX, y = e.clientY - lift;
+  drag.ghost.style.left = x + "px";
+  drag.ghost.style.top = y + "px";
+  const guide = $("guide");
+  if (overTrack(e.clientX, y)) {
+    const v = valueAt(y);
+    track.classList.add("hot");
+    guide.style.display = "block";
+    guide.style.top = (1 - v) * track.clientHeight + "px";
+    $("guide-pct").textContent = pct(v);
+  } else {
+    track.classList.remove("hot");
+    guide.style.display = "none";
+  }
+}
+
+document.addEventListener("pointermove", (e) => {
+  if (!drag || e.pointerId !== drag.pointerId) return;
+  const dx = e.clientX - drag.startX, dy = e.clientY - drag.startY;
+  if (!drag.active) {
+    // cards: start only on a mostly-horizontal move so the list can still scroll
+    const go = drag.fromMarker ? Math.hypot(dx, dy) > 4 : Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy);
+    if (!go) return;
+    activate(e);
+  }
+  e.preventDefault();
+  move(e);
+}, { passive: false });
+
+function finish(e, cancelled) {
+  if (!drag || e.pointerId !== drag.pointerId) return;
+  const d = drag; drag = null;
+  if (!d.active) { if (!d.fromMarker && !cancelled) { selected = d.id; showInfo(); render(); } return; }
+  d.ghost.remove();
+  track.classList.remove("hot");
+  $("guide").style.display = "none";
+  const lift = e.pointerType === "touch" ? 44 : 0;
+  if (!cancelled && overTrack(e.clientX, e.clientY - lift)) {
+    state.pos[d.id] = valueAt(e.clientY - lift);
+    selected = d.id;
+    if (navigator.vibrate) navigator.vibrate(10);
+  } else if (d.fromMarker && !cancelled) {
+    delete state.pos[d.id]; // dragged off the line: back to unplaced
+    selected = null;
+  }
+  save();
+  render();
+}
+document.addEventListener("pointerup", (e) => finish(e, false));
+document.addEventListener("pointercancel", (e) => finish(e, true));
+window.addEventListener("resize", () => { if ($("task-screen").classList.contains("on")) render(); });
+
+/* ---------- submit ---------- */
+// With mode "no-cors" the response is opaque, so a resolved fetch counts as delivered.
+// A rejected fetch (offline, DNS, timeout) is retried a few times, then the user can tap to retry.
+// The answer is always kept on the phone ("submitted"), and stays "pending" until it has been sent.
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const RETRY_DELAYS = [1500, 3000, 6000];
+let sending = false;
+
+async function postOnce(payload) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 20000);
+  try {
+    // text/plain keeps this a "simple" request (no CORS preflight), which Apps Script accepts
+    await fetch(SUBMIT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify(payload), signal: ctrl.signal });
+  } finally { clearTimeout(t); }
+}
+
+async function send(payload) {
+  if (!SUBMIT_URL) { console.log("[poll] no SUBMIT_URL set; answer kept locally:", payload); return true; }
+  const msg = $("send-msg");
+  for (let attempt = 0; attempt <= RETRY_DELAYS.length; attempt++) {
+    try {
+      await postOnce(payload);
+      return true;
+    } catch (err) {
+      console.error("[poll] send failed", err);
+      if (attempt === RETRY_DELAYS.length) break;
+      const left = RETRY_DELAYS.length - attempt;
+      msg.className = "send-msg";
+      msg.textContent = `Couldn't reach the server. Retrying (${left} ${left === 1 ? "try" : "tries"} left)… Your answers are saved on this phone.`;
+      if (!navigator.onLine) msg.textContent = "You seem to be offline. Retrying… Your answers are saved on this phone.";
+      await sleep(RETRY_DELAYS[attempt]);
+    }
+  }
+  return false;
+}
+
+function showDone(payload) {
+  $("thanks").textContent = `Thanks, ${state.name}!`;
+  const sorted = ITEMS.slice().sort((a, b) => payload.answers[b.id] - payload.answers[a.id]);
+  $("summary").innerHTML = sorted
+    .map((it) => `<div class="row"><span class="badge">${it.id}</span>` +
+      `<span>${it.task}, <span style="color:var(--green)">${it.who}</span></span><span class="pct">${pct(payload.answers[it.id])}</span></div>`)
+    .join("");
+  show("done-screen");
+}
+
+async function submit(payload) {
+  if (sending) return;
+  sending = true;
+  const btn = $("submit"), msg = $("send-msg");
+  btn.disabled = true; btn.textContent = "Sending…";
+  msg.textContent = "";
+  store.set("submitted", payload); // local copy, always
+  store.set("pending", payload);
+  const ok = await send(payload);
+  sending = false;
+  if (!ok) {
+    btn.disabled = false; btn.textContent = "Couldn't send. Tap to retry";
+    msg.className = "send-msg";
+    msg.textContent = "Still can't reach the server. Check your Wi-Fi or data and tap retry. Your answers are saved on this phone.";
+    return;
+  }
+  store.set("pending", null);
+  msg.textContent = "";
+  render();
+  showDone(payload);
+}
+
+$("submit").addEventListener("click", () => {
+  submit({
+    poll: POLL_ID,
+    name: state.name,
+    answers: Object.fromEntries(ITEMS.map((it) => [it.id, Math.round(state.pos[it.id] * 1000) / 1000])),
+    submittedAt: new Date().toISOString(),
+  });
+});
+// Coming back online with an unsent answer: send it again automatically.
+window.addEventListener("online", () => {
+  const p = store.get("pending");
+  if (p && !sending && $("task-screen").classList.contains("on")) submit(p);
+});
+$("edit").addEventListener("click", () => { show("task-screen"); render(); });
+
+</script>
+</body>
+</html>

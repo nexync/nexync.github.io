@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101010">
+<title>Verifiability poll · Results</title>
+<style>
+  :root {
+    --bg: #101010; --card: #1c1c1e; --rule: #3a3a3c; --border: #d3d3d3;
+    --text: #f0f8ff; --muted: #a9b1bb;
+    --red: #ff004d; --green: #00ff41; --blue: #00caff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; background: var(--bg); color: var(--text); }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "IBM Plex Sans", Arial, sans-serif;
+    padding: clamp(16px, 5vw, 96px); display: flex; flex-direction: column; gap: clamp(16px, 3vh, 40px);
+    min-height: 100vh;
+  }
+  button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+  .eyebrow { font-size: clamp(12px, 1.1vw, 20px); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--red); }
+  h1 { font-family: Georgia, "Source Serif 4", serif; font-weight: 600; font-size: clamp(26px, 3.6vw, 64px); line-height: 1.1; margin-top: 8px; }
+  .bar-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tabs button { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--rule); font-size: clamp(13px, 1vw, 17px); color: var(--muted); }
+  .tabs button.on { border-color: var(--text); color: var(--text); background: rgba(240, 248, 255, .08); }
+  .status { font-size: clamp(12px, 1vw, 16px); color: var(--muted); }
+
+  .foot { font-size: clamp(12px, 1vw, 16px); color: var(--muted); }
+</style>
+</head>
+<body>
+  <div class="bar-top">
+    <div>
+      <p class="eyebrow">Activity · Results</p>
+      <h1 id="title"></h1>
+    </div>
+    <div class="tabs" id="tabs"></div>
+  </div>
+  <div class="scales" id="scales"></div>
+  <div class="bar-top">
+    <p class="foot" id="foot"></p>
+    <p class="status" id="status"></p>
+  </div>
+
+<script src="config.js"></script>
+<script src="poll-render.js"></script>
+<script>
+const CFG = window.POLL_CONFIG;
+const PR = window.PollRender;
+const VIEWS = PR.VIEWS; // open results.html#same, #experts or #all to jump straight to one
+
+let responses = [];
+let source = "";
+let view = VIEWS.find((v) => "#" + v.key === location.hash) || VIEWS[0];
+
+/* ---------- data ---------- */
+async function load() {
+  const params = new URLSearchParams(location.search);
+  if (params.has("demo")) { responses = PR.demoResponses(); source = "demo data"; return; }
+  if (CFG.resultsUrl) {
+    try {
+      responses = await PR.fetchResponses(CFG.resultsUrl, CFG.pollId);
+      source = "live";
+    } catch (err) { console.error(err); source = "couldn't reach results source"; }
+    return;
+  }
+  // No backend yet: show this browser's own submission, if any.
+  try {
+    const mine = JSON.parse(localStorage.getItem(CFG.pollId + ":submitted"));
+    responses = mine ? [mine] : [];
+  } catch { responses = []; }
+  source = "no results source set (add resultsUrl in config.js, or open with ?demo)";
+}
+
+/* ---------- render ---------- */
+function render() {
+  document.getElementById("title").textContent = view.title;
+  const tabs = document.getElementById("tabs");
+  tabs.innerHTML = "";
+  for (const v of VIEWS) {
+    const b = document.createElement("button");
+    b.textContent = v.tab;
+    b.className = v === view ? "on" : "";
+    b.onclick = () => go(v);
+    tabs.appendChild(b);
+  }
+  const rs = PR.latestPerName(responses);
+  PR.renderView(document.getElementById("scales"), view, rs, CFG.items);
+  document.getElementById("foot").textContent =
+    rs.length ? `Room averages from ${rs.length} ${rs.length === 1 ? "person" : "people"}. Small dots are individual answers.` : "";
+  document.getElementById("status").textContent = source;
+}
+
+function go(v) {
+  view = v;
+  history.replaceState(null, "", "#" + v.key);
+  render();
+}
+
+// presenter clickers send arrow / page keys
+document.addEventListener("keydown", (e) => {
+  const i = VIEWS.indexOf(view);
+  if (["ArrowRight", "PageDown", " "].includes(e.key)) go(VIEWS[Math.min(VIEWS.length - 1, i + 1)]);
+  if (["ArrowLeft", "PageUp"].includes(e.key)) go(VIEWS[Math.max(0, i - 1)]);
+});
+window.addEventListener("resize", render);
+window.addEventListener("hashchange", () => {
+  const v = VIEWS.find((x) => "#" + x.key === location.hash);
+  if (v && v !== view) { view = v; render(); }
+});
+
+(async function loop() {
+  await load();
+  render();
+  if (CFG.resultsUrl && !new URLSearchParams(location.search).has("demo")) setTimeout(loop, CFG.refreshMs || 5000);
+})();
+</script>
+</body>
+</html>
